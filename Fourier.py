@@ -19,10 +19,9 @@ def inv_sin(val):
 
 pi = math.pi
 
-
 window_width = 1440
 window_height = 960
-fps = 60
+fps = 80
 window = pygame.display.set_mode((window_width, window_height))
 clock = pygame.time.Clock()
 
@@ -40,7 +39,7 @@ y_initial = 540
 fourier_list = []
 line = 480
 
-iterations = 1
+iterations = 6
 
 pygame.init()
 os.environ["SDL_VIDEO_CENTERED"] = '1'
@@ -71,34 +70,32 @@ while run:
 
         pygame.draw.circle(window, turquoise, (x_im1, y_im1), int(r), 2)
         pygame.draw.line(window, turquoise, (x_im1, y_im1), (x_i, y_i), 3)
+        if i == 0:
+            pygame.draw.line(window, yellow, (x_im1, y_im1), (x_i, y_i), 3)
+            if x_i >= 420:
+                if y_i - y_initial >= 0:
+                    theta = inv_sin((y_i - y_initial) / (150 * (4 / pi)))
+                else:
+                    theta = 2 * pi + inv_sin((y_i - y_initial) / (150 * (4 / pi)))
+            else:
+                theta = pi - inv_sin((y_i - y_initial) / (150 * (4 / pi)))
+            theta = round(theta / pi, 3)
         pygame.draw.circle(window, yellow, (x_i, y_i), 5)
-
-        if x_i <= 420:
-            if y_i - y_initial >= 0:
-                theta = pi - inv_sin((y_i - y_initial) / (150*(4 / pi)))
-            else:
-                theta = (3*pi)/2 - inv_sin((y_i - y_initial) / (150 * (4 / pi)))
-        else:
-            if y_i - y_initial >= 0:
-                theta = inv_sin((y_i - y_initial) / (150 * (4 / pi)))
-            else:
-                theta = 2*pi - inv_sin((y_i - y_initial) / (150 * (4 / pi)))
-
-        theta = round(theta/3, 3)
 
     fourier_list.insert(0, y_i)
 
-    if len(fourier_list) > 2000:
+    if len(fourier_list) > 450:
         fourier_list.pop()
 
     pygame.draw.line(window, turquoise, (x_i, y_i), (x_initial + line, fourier_list[0]), 3)
+    pygame.draw.line(window, yellow, (x_initial, y_initial), (x_initial + 190, y_initial), 3)
 
     for i in range(len(fourier_list)):
         pygame.draw.circle(window, yellow, (i + x_initial + line, fourier_list[i]), 3)
 
     t += 0.01
     label = font.render(str(theta) + 'pi', True, yellow)
-    window.blit(label, ((x_initial + (x_im1 - x_initial / 2)), y_initial + (y_im1 - y_im1)/2))
+    window.blit(label, (540, 550))
     pygame.display.update()
 
 pygame.quit()
